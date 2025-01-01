@@ -1,6 +1,5 @@
 #include "gpio.h"
 
-uint8_t flag_check = 0 ;
 
 void GPIO_init(void) {
     // Enable clocks for GPIOC, GPIOA, and GPIOB
@@ -29,38 +28,6 @@ void GPIO_init(void) {
     LED_PORT_START->ODR &= ~ (unsigned int) LED_START;
     LED_PORT_STOP ->ODR &= ~ (unsigned int) LED_STOP;
 
-    // Configure PB4 as input with pull-up resistor
-    GPIOB->CRL &= ~(GPIO_CRL_MODE4 | GPIO_CRL_CNF4);  // Clear configuration for PB4
-    GPIOB->CRL |= GPIO_CRL_CNF4_1;  // Input with pull-up/pull-down
-    GPIOB->ODR |= GPIO_ODR_ODR4;    // Enable pull-up resistor
-		
-		
-    RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPCEN | RCC_APB2ENR_AFIOEN;
-
-
-    GPIOA->CRL &= ~(GPIO_CRL_MODE0 | GPIO_CRL_CNF0);  
-    GPIOA->CRL |= GPIO_CRL_CNF0_1;                    
-    GPIOA->ODR |=  GPIO_Pin_0;                         
-
-    GPIOC->CRH &= ~(GPIO_CRH_MODE13 | GPIO_CRH_CNF13);  
-    GPIOC->CRH |= GPIO_CRH_MODE13_0;                    
-
-    
-    GPIOC->ODR |= LED_PIN;
-
-    AFIO->EXTICR[0] &= ~(unsigned int )AFIO_EXTICR1_EXTI0;
-    AFIO->EXTICR[0] |= AFIO_EXTICR1_EXTI0_PA;
-
-
-    EXTI->RTSR |= EXTI_RTSR_TR0;  // Rising edge trigger
-    EXTI->FTSR |= EXTI_FTSR_TR0;  // Falling edge trigger
-
-
-    EXTI->IMR |= EXTI_IMR_MR0;
-
-
-    NVIC_SetPriority(EXTI0_IRQn, 2);
-    NVIC_EnableIRQ(EXTI0_IRQn);
 }
 
 
@@ -69,11 +36,3 @@ uint16_t Read_Pin(uint16_t pin)
     return BUTTON_PORT->IDR & pin;  // Read input data register
 }
 
-
-void EXTI0_IRQHandler(void) {
-    if (EXTI->PR & EXTI_PR_PR0) {
-
-        flag_check = 1 ; 
-        EXTI->PR = EXTI_PR_PR0;
-    }
-}
